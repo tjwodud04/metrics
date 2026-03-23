@@ -1551,8 +1551,8 @@ runs:
         echo "Image tag: $METRICS_TAG"
 
         # Image name
-        # Official action
-        if [[ $METRICS_SOURCE == "lowlighter" ]]; then
+        # Official action or recognized fork
+        if [[ $METRICS_SOURCE == "lowlighter" ]] || [[ $METRICS_SOURCE == "tjwodud04" ]]; then
           # Use registry with pre-built images
           if [[ ! $METRICS_USE_PREBUILT_IMAGE =~ ^([Ff]alse|[Oo]ff|[Nn]o|0)$ ]]; then
             # Is released version
@@ -1595,8 +1595,8 @@ runs:
         fi
         echo "::endgroup::"
 
-        # Run docker image with current environment
-        docker run --init --rm --volume $GITHUB_EVENT_PATH:$GITHUB_EVENT_PATH --volume $METRICS_RENDERS:/renders --env-file .env $METRICS_IMAGE
+        # Run docker image with current environment (mount patched source for forks)
+        docker run --init --rm --volume $GITHUB_EVENT_PATH:$GITHUB_EVENT_PATH --volume $METRICS_RENDERS:/renders --volume $METRICS_ACTION_PATH/source:/metrics/source --env-file .env $METRICS_IMAGE
         rm .env
       shell: bash
       env:
